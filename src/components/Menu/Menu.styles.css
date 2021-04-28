@@ -1,0 +1,101 @@
+.menu-container {
+  height: 100%;
+  width: 200px;
+  background-color: #483d8b;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+.menu-title {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  width: 200px;
+  -webkit-box-shadow: -2px -2px 30px -4px rgba(0, 0, 0, 0.75);
+  -moz-box-shadow: -2px -2px 30px -4px rgba(0, 0, 0, 0.75);
+  box-shadow: -2px -2px 30px -4px rgba(0, 0, 0, 0.75);
+}
+
+.admin-panel-icon {
+  margin-top: 18px;
+  padding-right: 10px;
+  color: white;
+}
+
+.menu-text {
+  font-size: 20px;
+  color: white;
+  font-family: "Courier New", Courier, monospace;
+}
+
+.sections {
+  margin-top: 50px;
+}
+
+.security-section {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  width: 200px;
+}
+
+.option:hover {
+  background-color: violet;
+}
+
+.security-icon {
+  margin-top: 11px;
+  padding-right: 10px;
+  color: white;
+
+  font-size: 15px;
+}
+
+.security-text {
+  font-size: 15px;
+  color: white;
+  font-family: "Courier New", Courier, monospace;
+}
+
+.analytics-section {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  width: 200px;
+}
+
+.analytics-icon {
+  margin-top: 11px;
+  padding-right: 10px;
+  color: white;
+  font-size: 15px;
+}
+
+.analytics-text {
+  font-size: 15px;
+  color: white;
+  font-family: "Courier New", Courier, monospace;
+}
+
+.notifications-section {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  width: 200px;
+}
+
+.notifications-icon {
+  margin-top: 11px;
+  padding-right: 10px;
+  color: white;
+  font-size: 15px;
+}
+
+.notifications-text {
+  font-size: 15px;
+  color: white;
+  font-family: "Courier New", Courier, monospace;
+  text-decoration: none;
+  margin-top: 10px;
+}
