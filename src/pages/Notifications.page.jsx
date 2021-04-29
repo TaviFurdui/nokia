@@ -3,9 +3,16 @@ import './Notifications.styles.css'
 import Data from '../Data/Data.js'
 import { store } from 'react-notifications-component';
 import 'react-notifications-component/dist/theme.css';
+import Select from 'react-select';
 import * as emailjs from 'emailjs-com'
 //import pathString from './../../get_php_link.js'
-import axios from 'axios'
+import axios from 'axios';
+
+const options = [
+    { value: 1, label: '1' },
+    { value: 2, label: '2' },
+    { value: 3, label: '3' }
+]
 
 export default class Notifications extends Component {
     
@@ -13,27 +20,63 @@ export default class Notifications extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            Adresa:'',
-            Continut:'',
-            Number:'',
-            Status:'',
+            data:[],
+            Mesaj:'',
             Priority:'',
             Numar_inregistrari: 0
         }
     }
 
-    sendTicket = (e) => {
-        e.preventDefault();
+    /*sendAdresa = () => {
         var headers ={
             'Content-Type':'application/json'
         }
         var payload = new FormData();
-        payload.append('Number',this.state.Number);
-        payload.append('Status',this.state.Status);
+        payload.append('Adresa',this.state.Adresa);
+        payload.append('Continut',this.state.Continut);
+        axios.post('http://localhost:81/Nokia/sendAdresa.php',payload).then(res=>{
+            this.setState({data:res.data});
+        })
+    }*/
+    getNotificari = () => {
+        axios({method:'get', url:'http://localhost:81/Nokia/afiseaza_notificare.php'}).then(res=>{
+            this.setState({data:res.data});
+        });
+    }
+
+
+    sendEmail = (e) => {
+    e.preventDefault();
+    //TRIMITE MAIL
+
+    /*emailjs.sendForm('service_xrr0vpi', 'template_939alku', e.target, 'user_fW70iSUnkx1lopmIJzfgx')
+      .then((result) => {
+          console.log(result.text);
+      }, (error) => {
+          console.log(error.text);
+      });*/
+
+        //INTRODUCEM TICKETUL IN TABELA TICKETE
+        var headers ={
+            'Content-Type':'application/json'
+        }
+        var payload = new FormData();
         payload.append('Priority',this.state.Priority);
         axios.post('http://localhost:81/Nokia/introduce.php',payload).then(res=>{
             this.setState({data:res.data});
         });
+
+        //INTRODUCEM TICKET CA SI NOTIFICARE IN TABELA NOTIFICARI
+        var headers ={
+            'Content-Type':'application/json'
+        }
+        var payload = new FormData();
+        payload.append('Mesaj',this.state.Mesaj);
+        axios.post('http://localhost:81/Nokia/adauga_notificare.php',payload).then(res=>{
+            this.setState({data:res.data});
+        });
+
+        //APARE NOTIFICARE
         if (this.state.Priority == 1)
         {
             store.addNotification({
@@ -85,28 +128,7 @@ export default class Notifications extends Component {
             }
             })
         }
-    }
-    sendAdresa = () => {
-        var headers ={
-            'Content-Type':'application/json'
-        }
-        var payload = new FormData();
-        payload.append('Adresa',this.state.Adresa);
-        payload.append('Continut',this.state.Continut);
-        axios.post('http://localhost:81/Nokia/sendAdresa.php',payload).then(res=>{
-            this.setState({data:res.data});
-        })
-    }
-    sendEmail = (e) => {
-    e.preventDefault();
-
-    emailjs.sendForm('service_xrr0vpi', 'template_939alku', e.target, 'user_fW70iSUnkx1lopmIJzfgx')
-      .then((result) => {
-          console.log(result.text);
-      }, (error) => {
-          console.log(error.text);
-      });
-  }
+   }
   
 
     createNotification = (type) => {
@@ -196,45 +218,35 @@ export default class Notifications extends Component {
     }*/
 
     render() {
-        const notificari = Data.map((Data) =>
+        const notificari = this.state.data.map((data) =>
             <div className="notification-item">
-                {Data.content}
+                 {data.MESAJ}
             </div>
         );
 
         return (
+            <React.Fragment>
             <div className = "notifications-container">
                 <h1 className="notifications-header">Notificari</h1>
                 {notificari}
+                    {this.state.data.map((row, index) => (
+                        <div className="notification-item">
+                        key={index}
+                        {row.Mesaj}
+                        </div>
+                    ))}
+                
                 <div className = "butoane-container">
-					
-                <button className = "adauga-notificare" onClick = {this.createNotification('success')}>Adauga confirmare</button>
-                <button className = "adauga-notificare"  onClick={this.createNotification('warning')}>Adauga atentionare</button>
-                <button className = "adauga-notificare"  onClick = {this.createNotification('danger')}>Adauga eroare</button>
-                   
-                    <form className="contact-form" onSubmit={this.sendEmail.bind(this)}>
-                        <label>Email</label>
-                        <input type="text" name="Adresa" onChange={(p)=>this.setState({Adresa:p.target.value})} value = {this.state.Adresa} />
-                        <label>Message</label>
-                        <input type="text" name="Continut" onChange = {(p) => this.setState ({Continut :p.target.value})} value = {this.state.Continut} />
-                        
-
-                        <button onClick = {this.sendAdresa}>Send</button>
-                    </form>
 
                     <form className="contact-form" onSubmit={this.sendEmail.bind(this)}>
-                        <label>Number</label>
-                        <input type="text" name="Number" onChange={(p)=>this.setState({Number:p.target.value})} value = {this.state.Number} />
-                        <label>Status</label>
-                        <input type="text" name="Status" onChange={(p)=>this.setState({Status:p.target.value})} value = {this.state.Status} />
-                        <label>Priority</label>
-                        <input type="text" name="Priority" onChange={(p)=>this.setState({Priority:p.target.value})} value = {this.state.Priority} />
+                        <label>Nivel de prioritate</label>
+                        <Select name = "nivel"  placeholder = {""} onChange = {(p)=> {this.setState({Priority:p.value}); this.setState({Mesaj:'A fost creat un ticket nou de prioritate ' + this.state.Priority })}} options={options} />
 
-                        <button onClick = {this.sendTicket}>Send Ticket</button>
+                        <button>Send Ticket</button>
                     </form>
-    
                </div>
             </div>
+            </React.Fragment>
         )
     }
 }
