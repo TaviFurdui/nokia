@@ -9,6 +9,7 @@ import * as emailjs from 'emailjs-com'
 import axios from 'axios';
 
 const options = [
+    { value: 0, label: '0' },
     { value: 1, label: '1' },
     { value: 2, label: '2' },
     { value: 3, label: '3' }
@@ -20,7 +21,7 @@ export default class Notifications extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            data:[],
+            row:[],
             Mesaj:'',
             Priority:'',
             Numar_inregistrari: 0
@@ -77,12 +78,29 @@ export default class Notifications extends Component {
         });
 
         //APARE NOTIFICARE
-        if (this.state.Priority == 1)
+        if (this.state.Priority == 0)
+        {
+            store.addNotification({
+            title: "Avertisment",
+            message: "S-a adaugat un ticket de prioritate 0",
+            type: 'danger',
+            container: 'top-right',
+            insert: 'bottom',
+            animationIn: ["animated", "fadeIn"],
+            animationOut: ["animated", "zoomOut"],
+          
+            dismiss: {
+                duration: 3000,
+                showIcon:true,
+            }
+            })
+        }
+        else if (this.state.Priority == 1)
         {
             store.addNotification({
             title: "Avertisment",
             message: "S-a adaugat un ticket de prioritate 1",
-            type: 'danger',
+            type: 'warning',
             container: 'top-right',
             insert: 'bottom',
             animationIn: ["animated", "fadeIn"],
@@ -99,7 +117,7 @@ export default class Notifications extends Component {
             store.addNotification({
             title: "Avertisment",
             message: "S-a adaugat un ticket de prioritate 2",
-            type: 'warning',
+            type: 'info',
             container: 'top-right',
             insert: 'bottom',
             animationIn: ["animated", "fadeIn"],
@@ -116,7 +134,7 @@ export default class Notifications extends Component {
             store.addNotification({
             title: "Avertisment",
             message: "S-a adaugat un ticket de prioritate 3",
-            type: 'success',
+            type: 'info',
             container: 'top-right',
             insert: 'bottom',
             animationIn: ["animated", "fadeIn"],
@@ -185,6 +203,22 @@ export default class Notifications extends Component {
             }
         } 
     }
+    componentDidMount()
+    {
+
+        axios.get('http://localhost:81/Nokia/afiseaza_notificare.php')
+          .then( response =>{
+            console.log(response);
+            this.setState({row:response.data});
+          })
+          .catch(function (error) {
+          console.log(error);
+          })
+          .then(function () {
+
+          });
+        
+    }
     /*componentDidMount(){
         axios({
             method:'get',
@@ -217,30 +251,24 @@ export default class Notifications extends Component {
             //alert (this.state.Numar_inregistrari);
     }*/
 
-    render() {
-        const notificari = this.state.data.map((data) =>
-            <div className="notification-item">
-                 {data.MESAJ}
-            </div>
-        );
+    render() 
+    {
 
         return (
             <React.Fragment>
             <div className = "notifications-container">
                 <h1 className="notifications-header">Notificari</h1>
-                {notificari}
-                    {this.state.data.map((row, index) => (
-                        <div className="notification-item">
-                        key={index}
-                        {row.Mesaj}
-                        </div>
-                    ))}
+                {this.state.row.map(datum=>  
+                    <div className="notification-item">
+                        {datum.MESAJ}
+                    </div>
+                )}
                 
                 <div className = "butoane-container">
 
                     <form className="contact-form" onSubmit={this.sendEmail.bind(this)}>
                         <label>Nivel de prioritate</label>
-                        <Select name = "nivel"  placeholder = {""} onChange = {(p)=> {this.setState({Priority:p.value}); this.setState({Mesaj:'A fost creat un ticket nou de prioritate ' + this.state.Priority })}} options={options} />
+                        <Select name = "nivel"  placeholder = {""} onChange = {(p)=> {this.setState({Priority:p.value}); this.setState({Mesaj:'A fost creat un ticket nou de prioritate ' + p.value })}} options={options} />
 
                         <button>Send Ticket</button>
                     </form>
